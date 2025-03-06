@@ -1,0 +1,11 @@
+services:
+  mobile_depth:
+    container_name: mobile_depth
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mobile_depth:latest
+    volumes:
+      - ./md_data:/md_data
+    tty: true
+    stdin_open: true
