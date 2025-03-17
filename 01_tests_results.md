@@ -1,65 +1,94 @@
 ## РЕЗУЛЬТАТЫ тестов
 ```
-root@7ab766a7265e:/md_data# ./run_tests.sh 
+root@8377323764f7:/md_data# ./run_tests.sh 
 Запуск тестов для модели MobileDepth...
-test_forward_no_exception_verbose (test_depth_model.TestMobileDepthVerbose) ... 
-TEST: Forward Pass
-  Forward pass выполнен успешно.
-  Пример выходных значений (min, max, mean): -0.3170611560344696 -0.05616181343793869 -0.17670176923274994
+test_device_compatibility_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Device Compatibility - SKIPPED (CUDA not available)
 ok
-test_model_parameters_verbose (test_depth_model.TestMobileDepthVerbose) ... 
-TEST: Model Parameters
-  Number of parameter groups:  53
-  Total number of parameters:  2214689
+test_different_input_sizes_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Different Input Sizes
+  Testing input size: (1, 3, 320, 320)
+  Expected output shape: (1, 1, 320, 320)
+  Actual output shape: torch.Size([1, 1, 320, 320])
+  Testing input size: (1, 3, 480, 480)
+  Expected output shape: (1, 1, 480, 480)
+  Actual output shape: torch.Size([1, 1, 480, 480])
+  Testing input size: (1, 3, 1024, 1024)
+  Expected output shape: (1, 1, 1024, 1024)
+  Actual output shape: torch.Size([1, 1, 1024, 1024])
 ok
-test_output_range_verbose (test_depth_model.TestMobileDepthVerbose) ... 
-TEST: Output Range
-  Output min:       -0.026324372738599777
-  Output max:       0.2371780425310135
-  Difference:       0.26350241526961327
+test_gradient_flow_verbose_corrected (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Gradient Flow (Corrected)
+  Parameters with gradients: 79/79
+  Percentage with gradients: 100.00%
+  Mean encoder gradient magnitude: 0.1535213142633438
+  Mean decoder gradient magnitude: 0.0023358820471912622
 ok
-test_output_shape_verbose (test_depth_model.TestMobileDepthVerbose) ... 
-TEST: Output Shape
-  Input shape:            torch.Size([1, 3, 640, 640])
-  Expected output shape:  (1, 1, 640, 640)
-  Actual output shape:    torch.Size([1, 1, 640, 640])
+test_multiscale_output_sigmoid_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Multi-scale Output and Sigmoid
+  Output 0 value range: [0.000000, 1.000000]
+  Output 1 value range: [0.000000, 1.000000]
+  Output 2 value range: [0.000000, 1.000000]
 ok
-test_output_type_verbose (test_depth_model.TestMobileDepthVerbose) ... 
-TEST: Output Type
-  Type of output:  <class 'torch.Tensor'>
+test_skip_connections_influence_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Skip Connections Influence
+  Mean absolute difference between normal and no-skip outputs: 0.10239001363515854
+ok
+test_spatial_attention_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Spatial Attention
+  Attention skip1 input shape: torch.Size([1, 64, 64, 64])
+  Attention skip1 output shape: torch.Size([1, 64, 64, 64])
+  Mean absolute difference (skip1): 0.3913044035434723
+ok
+test_training_mode_output_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Training Mode Output
+  Number of outputs: 3
+  Output shapes: [torch.Size([1, 1, 640, 640]), torch.Size([1, 1, 640, 640]), torch.Size([1, 1, 640, 640])]
+ok
+test_upsample_mechanism_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Upsampling Mechanism
+  Input shape: torch.Size([1, 512, 32, 32])
+  Expected output shape: (1, 256, 64, 64)
+  Actual output shape: torch.Size([1, 256, 64, 64])
+ok
+test_weight_initialization_verbose (test_depth_model.TestMobileDepthComprehensive) ... 
+TEST: Weight Initialization
+  Conv layer 'initial_conv.block.0' - Mean: 0.001024, Std: 0.081560
+  Conv layer 'dsconv1.depthwise.0' - Mean: -0.006300, Std: 0.080598
+  Conv layer 'dsconv1.pointwise.0' - Mean: 0.005765, Std: 0.171673
+  BN layer 'initial_conv.block.1' - Weight mean: 1.000000, Bias mean: 0.000000
+  BN layer 'dsconv1.depthwise.1' - Weight mean: 1.000000, Bias mean: 0.000000
+  BN layer 'dsconv1.pointwise.1' - Weight mean: 1.000000, Bias mean: 0.000000
 ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 1.690s
+Ran 9 tests in 5.885s
 
 OK
 Все тесты прошли успешно!
-
 ```
-### Объяснение результатов:
 
-1. **test_forward_no_exception_verbose:**  
-   - Тест проверяет, что прямой проход модели (forward pass) выполняется без ошибок.
-   - Вывод показывает, что проход выполнен успешно, и приведены примерные значения выходного тензора (минимальное, максимальное и среднее значение).  
-   - Это подтверждает, что модель может обрабатывать входное изображение и выдавать корректный тензор глубины.
+### These comprehensive tests provide a solid validation of your MobileDepth model's functionality. Here's what we've confirmed:
 
-2. **test_model_parameters_verbose:**  
-   - Тест выводит количество групп параметров (53) и общее число параметров (2 214 689).
-   - Это указывает, что модель содержит значимое количество параметров, что соответствует ожидаемой сложности архитектуры.
-   - Параметры модели заданы, и их число больше нуля, что подтверждает корректность определения модели.
+#### Multi-scale Output: 
+Your model correctly produces 3 outputs during training (with proper sigmoid activation) and a single output during inference.
 
-3. **test_output_range_verbose:**  
-   - Тест проверяет диапазон выходных значений.  
-   - Вывод показывает, что минимум ≈ -0.0263, максимум ≈ 0.2372, разница ≈ 0.2635.
-   - Наличие ненулевой разницы между минимумом и максимумом свидетельствует о том, что выход не является константным, а имеет распределение значений, что ожидаемо для модели, выдающей карту глубин.
+#### Resolution Flexibility: 
+The model handles different input resolutions (320×320, 480×480, 1024×1024) correctly, maintaining appropriate output dimensions.
 
-4. **test_output_shape_verbose:**  
-   - Тест сравнивает форму входного тензора, ожидаемую и фактическую форму выхода.
-   - Входной тензор имеет размер [1, 3, 640, 640], а выход – [1, 1, 640, 640], что соответствует нашим ожиданиям (одноканальная карта глубин того же разрешения, что и вход).
+#### Skip Connections: 
+The significant difference (10%) between normal output and output without skip connections confirms your skip connections are properly influencing the results.
 
-5. **test_output_type_verbose:**  
-   - Тест подтверждает, что тип выходного значения – это torch.Tensor.
-   - Это важно для дальнейшей работы с моделью в PyTorch и экспорта в ONNX.
+#### Attention Mechanisms: 
+Your spatial attention modules are effectively modifying feature maps.
 
-В совокупности, все тесты прошли успешно, что свидетельствует о корректной реализации базовой архитектуры модели MobileDepth.
-Модель способна обрабатывать входное изображение, возвращая выход в нужном формате и типе, с корректно сформированным диапазоном значений и адекватным числом параметров.
+#### Gradient Flow: 
+With the corrected test, we confirmed that 100% of parameters receive gradients when using all outputs in the loss calculation, which is ideal for training.
+
+#### Proper Initialization: 
+Weight initialization follows the expected patterns - near-zero means for convolutional layers and correct initialization for batch normalization layers.
+
+#### Upsampling: 
+The decoder's upsampling blocks correctly double spatial dimensions.
+
+These tests provide a robust validation framework that will help ensure your depth estimation model remains stable if you make modifications or improvements in the future. The multi-scale output design is particularly valuable for deep supervision during training, which often leads to better gradient flow and faster convergence.

@@ -7,5 +7,6 @@ services:
     image: mobile_depth:latest
     volumes:
       - ./md_data:/md_data
+      - /mnt/DataSets/MidAir:/MidAir
     tty: true
     stdin_open: true
